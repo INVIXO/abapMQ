@@ -16,10 +16,6 @@ CLASS ZCL_ABAPMQ_MQTT_CONNECT IMPLEMENTATION.
 
   METHOD zif_abapmq_mqtt_packet~encode.
 
-    DATA: lv_byte1 TYPE x,
-          lv_byte2 TYPE x.
-
-
     DATA(lo_payload) = NEW zcl_abapmq_mqtt_stream( ).
     lo_payload->add_utf8( 'MQTT' ). " protocol version
     lo_payload->add_hex( '04' ). " protocol level
@@ -27,12 +23,12 @@ CLASS ZCL_ABAPMQ_MQTT_CONNECT IMPLEMENTATION.
     lo_payload->add_hex( '001E' ). " keepalive
     lo_payload->add_hex( '0000' ). " client id length
 
-    lv_byte1 = zif_abapmq_mqtt_packet~get_type( ) * 16.
-    ro_stream = NEW #( lv_byte1 ).
-    lv_byte2 = lo_payload->get_length( ).
-    ro_stream->add_hex( lv_byte2 ).
 
-    ro_stream->add_stream( lo_payload ).
+    ro_stream = NEW #( ).
+
+    ro_stream->add_packet(
+      ii_packet  = me
+      io_payload = lo_payload ).
 
   ENDMETHOD.
 

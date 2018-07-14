@@ -8,4 +8,7 @@ interface ZIF_ABAPMQ_MQTT_PACKET
   methods ENCODE
     returning
       value(RO_STREAM) type ref to ZCL_ABAPMQ_MQTT_STREAM .
+  methods DECODE
+    importing
+      !IO_STREAM type ref to ZCL_ABAPMQ_MQTT_STREAM .
 endinterface.

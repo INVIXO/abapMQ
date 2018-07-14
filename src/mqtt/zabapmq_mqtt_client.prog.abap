@@ -46,6 +46,10 @@ CLASS lcl_test DEFINITION.
       run
         RAISING
           cx_apc_error,
+      receive_byte
+        RETURNING
+          VALUE(rv_byte) TYPE string,
+      receive,
       send
         IMPORTING
           ii_packet TYPE REF TO zif_abapmq_mqtt_packet
@@ -53,6 +57,7 @@ CLASS lcl_test DEFINITION.
           cx_apc_error.
 
     DATA: mo_message_manager TYPE REF TO if_apc_wsp_message_manager,
+          mo_event_handler   TYPE REF TO lcl_apc_handler,
           mo_message         TYPE REF TO if_apc_wsp_message.
 
 ENDCLASS.
@@ -61,11 +66,10 @@ CLASS lcl_test IMPLEMENTATION.
 
   METHOD run.
 
-    DATA: lo_client        TYPE REF TO if_apc_wsp_client,
-          lo_event_handler TYPE REF TO lcl_apc_handler.
+    DATA: lo_client TYPE REF TO if_apc_wsp_client.
 
 
-    CREATE OBJECT lo_event_handler.
+    CREATE OBJECT mo_event_handler.
 
     DATA(ls_frame) = VALUE apc_tcp_frame(
       frame_type   = if_apc_tcp_frame_types=>co_frame_type_fixed_length
@@ -75,29 +79,90 @@ CLASS lcl_test IMPLEMENTATION.
       i_host          = 'broker.hivemq.com'
       i_port          = '1883'
       i_frame         = ls_frame
-      i_event_handler = lo_event_handler ).
+      i_event_handler = mo_event_handler ).
 
     lo_client->connect( ).
 
     mo_message_manager ?= lo_client->get_message_manager( ).
     mo_message         ?= mo_message_manager->create_message( ).
 
-
-    WRITE: / 'Send CONNECT'.
+    WRITE: /, / 'Send CONNECT'.
     send( NEW zcl_abapmq_mqtt_connect( ) ).
+    receive( ).
 
-    DO 4 TIMES.
-      CLEAR lo_event_handler->m_message.
-      WAIT FOR PUSH CHANNELS UNTIL lo_event_handler->m_message IS NOT INITIAL UP TO 2 SECONDS.
-      IF sy-subrc = 8.
-        WRITE: / 'Timeout occured !'.
-        EXIT.
-      ELSE.
-        WRITE: / 'CONNACK:', lo_event_handler->m_message.
-      ENDIF.
+    WRITE: /, / 'Send PINGREQ'.
+    send( NEW zcl_abapmq_mqtt_pingreq( ) ).
+    receive( ).
+
+    WRITE: /, / 'Send SUBSCRIBE'.
+    send( NEW zcl_abapmq_mqtt_subscribe( )->set_topics( VALUE #( ( |ozan/iot2| ) ) ) ).
+    receive( ).
+
+    WRITE: /, / 'Setup done'.
+
+    DO 5 TIMES.
+      receive( ).
     ENDDO.
 
+    WRITE: /.
+
     lo_client->close( ).
+
+  ENDMETHOD.
+
+  METHOD receive_byte.
+
+    CLEAR mo_event_handler->m_message.
+    WAIT FOR PUSH CHANNELS UNTIL mo_event_handler->m_message IS NOT INITIAL UP TO 2 SECONDS.
+    IF sy-subrc = 8.
+      WRITE: / 'Timeout occured !'.
+    ELSE.
+      rv_byte = mo_event_handler->m_message.
+    ENDIF.
+
+  ENDMETHOD.
+
+  METHOD receive.
+
+    DATA: lv_hex    TYPE x LENGTH 1,
+          lo_stream TYPE REF TO zcl_abapmq_mqtt_stream,
+          lv_type   TYPE i,
+          lv_length TYPE i.
+
+
+    lo_stream = NEW #( ).
+
+    DATA(lv_data) = receive_byte( ).
+    lv_hex = lv_data.
+    lo_stream->add_hex( lv_hex ).
+    lv_type = lv_hex / 16.
+
+    lv_data = receive_byte( ). " todo, this is wrong
+    lv_hex = lv_data.
+    lo_stream->add_hex( lv_hex ).
+    lv_length = lv_hex.
+
+    DO lv_length TIMES.
+      lv_data = receive_byte( ).
+      lo_stream->add_hex( CONV xstring( lv_data ) ).
+    ENDDO.
+
+    CASE lv_type.
+      WHEN 2.
+        WRITE: / 'Received CONNACK'.
+      WHEN 3.
+        WRITE: / 'Received PUBLISH'.
+        WRITE: / 'Payload:', lo_stream->get_hex( ).
+        DATA(lo_publish) = NEW zcl_abapmq_mqtt_publish( ).
+        lo_publish->zif_abapmq_mqtt_packet~decode( lo_stream ).
+        WRITE: / cl_binary_convert=>xstring_utf8_to_string( lo_publish->get_message( )-message ).
+      WHEN 9 .
+        WRITE: / 'Received SUBACK'.
+      WHEN 13.
+        WRITE: / 'Received PINGRESP'.
+      WHEN OTHERS.
+        WRITE: / 'Unknown packet', lv_type.
+    ENDCASE.
 
   ENDMETHOD.
 
