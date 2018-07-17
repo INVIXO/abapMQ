@@ -14,7 +14,7 @@ public section.
       value(RO_STREAM) type ref to ZCL_ABAPMQ_MQTT_STREAM .
   methods ADD_PACKET
     importing
-      !II_PACKET type ref to ZIF_ABAPMQ_MQTT_PACKET
+      !II_PACKET type ref to ZIF_MQTT_PACKET
       !IO_PAYLOAD type ref to ZCL_ABAPMQ_MQTT_STREAM optional
       !IV_FLAGS type I default 0
     returning

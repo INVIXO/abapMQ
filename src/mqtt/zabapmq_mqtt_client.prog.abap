@@ -52,7 +52,7 @@ CLASS lcl_test DEFINITION.
       receive,
       send
         IMPORTING
-          ii_packet TYPE REF TO zif_abapmq_mqtt_packet
+          ii_packet TYPE REF TO zif_mqtt_packet
         RAISING
           cx_apc_error.
 
@@ -87,15 +87,15 @@ CLASS lcl_test IMPLEMENTATION.
     mo_message         ?= mo_message_manager->create_message( ).
 
     WRITE: /, / 'Send CONNECT'.
-    send( NEW zcl_abapmq_mqtt_connect( ) ).
+    send( NEW zcl_mqtt_connect( ) ).
     receive( ).
 
     WRITE: /, / 'Send PINGREQ'.
-    send( NEW zcl_abapmq_mqtt_pingreq( ) ).
+    send( NEW zcl_mqtt_pingreq( ) ).
     receive( ).
 
     WRITE: /, / 'Send SUBSCRIBE'.
-    send( NEW zcl_abapmq_mqtt_subscribe( )->set_topics( VALUE #( ( |ozan/iot2| ) ) ) ).
+    send( NEW zcl_mqtt_subscribe( )->set_topics( VALUE #( ( |ozan/iot2| ) ) ) ).
     receive( ).
 
     WRITE: /, / 'Setup done'.
@@ -153,8 +153,8 @@ CLASS lcl_test IMPLEMENTATION.
       WHEN 3.
         WRITE: / 'Received PUBLISH'.
         WRITE: / 'Payload:', lo_stream->get_hex( ).
-        DATA(lo_publish) = NEW zcl_abapmq_mqtt_publish( ).
-        lo_publish->zif_abapmq_mqtt_packet~decode( lo_stream ).
+        DATA(lo_publish) = NEW zcl_mqtt_publish( ).
+        lo_publish->decode( lo_stream ).
         WRITE: / cl_binary_convert=>xstring_utf8_to_string( lo_publish->get_message( )-message ).
       WHEN 9 .
         WRITE: / 'Received SUBACK'.
