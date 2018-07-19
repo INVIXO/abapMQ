@@ -16,7 +16,7 @@ INTERFACE zif_mqtt_constants
                unsuback    TYPE i VALUE 11,
                pingreq     TYPE i VALUE 12,
                pingresp    TYPE i VALUE 13,
-               disconnect  TYPE i VALUE  14,
+               disconnect  TYPE i VALUE 14,
              END OF gc_packets.
 
 ENDINTERFACE.

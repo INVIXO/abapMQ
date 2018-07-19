@@ -87,15 +87,15 @@ CLASS lcl_test IMPLEMENTATION.
     mo_message         ?= mo_message_manager->create_message( ).
 
     WRITE: /, / 'Send CONNECT'.
-    send( NEW zcl_mqtt_connect( ) ).
+    send( NEW zcl_mqtt_packet_connect( ) ).
     receive( ).
 
     WRITE: /, / 'Send PINGREQ'.
-    send( NEW zcl_mqtt_pingreq( ) ).
+    send( NEW zcl_mqtt_packet_pingreq( ) ).
     receive( ).
 
     WRITE: /, / 'Send SUBSCRIBE'.
-    send( NEW zcl_mqtt_subscribe( )->set_topics( VALUE #( ( |ozan/iot2| ) ) ) ).
+    send( NEW zcl_mqtt_packet_subscribe( )->set_topics( VALUE #( ( |ozan/iot2| ) ) ) ).
     receive( ).
 
     WRITE: /, / 'Setup done'.
@@ -125,7 +125,7 @@ CLASS lcl_test IMPLEMENTATION.
   METHOD receive.
 
     DATA: lv_hex    TYPE x LENGTH 1,
-          lo_stream TYPE REF TO zcl_abapmq_mqtt_stream,
+          lo_stream TYPE REF TO zcl_mqtt_stream,
           lv_type   TYPE i,
           lv_length TYPE i.
 
@@ -153,7 +153,7 @@ CLASS lcl_test IMPLEMENTATION.
       WHEN 3.
         WRITE: / 'Received PUBLISH'.
         WRITE: / 'Payload:', lo_stream->get_hex( ).
-        DATA(lo_publish) = NEW zcl_mqtt_publish( ).
+        DATA(lo_publish) = NEW zcl_mqtt_packet_publish( ).
         lo_publish->decode( lo_stream ).
         WRITE: / cl_binary_convert=>xstring_utf8_to_string( lo_publish->get_message( )-message ).
       WHEN 9 .
