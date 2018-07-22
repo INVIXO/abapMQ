@@ -21,21 +21,23 @@ ENDCLASS.
 CLASS ZCL_MQTT_PACKET_PUBREL IMPLEMENTATION.
 
 
-  METHOD ZIF_MQTT_PACKET~DECODE.
+  METHOD zif_mqtt_packet~decode.
 
 * todo
+    BREAK-POINT.
 
   ENDMETHOD.
 
 
-  METHOD ZIF_MQTT_PACKET~ENCODE.
+  METHOD zif_mqtt_packet~encode.
 
 * todo
+    BREAK-POINT.
 
   ENDMETHOD.
 
 
-  METHOD ZIF_MQTT_PACKET~GET_TYPE.
+  METHOD zif_mqtt_packet~get_type.
 
     rv_value = zif_mqtt_constants=>gc_packets-pubrel.
 

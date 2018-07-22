@@ -4,6 +4,9 @@ class ZCL_MQTT_STREAM definition
 
 public section.
 
+  methods ADD_LENGTH
+    importing
+      !IV_LENGTH type I .
   methods ADD_HEX
     importing
       !IV_HEX type XSEQUENCE
@@ -49,6 +52,9 @@ public section.
       !IV_LENGTH type I
     returning
       value(RV_HEX) type XSTRING .
+  methods EAT_LENGTH
+    returning
+      value(RV_LENGTH) type I .
 protected section.
 
   data MV_HEX type XSTRING .
@@ -69,21 +75,35 @@ CLASS ZCL_MQTT_STREAM IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD add_packet.
+  METHOD add_length.
 
-    DATA: lv_byte1 TYPE x,
-          lv_byte2 TYPE x.
+    DATA: lv_byte TYPE x.
 
+    lv_byte = iv_length.
 
-    lv_byte1 = ii_packet->get_type( ) * 16 + iv_flags.
-
-    add_hex( lv_byte1 ).
-
-    IF io_payload IS SUPPLIED.
-      lv_byte2 = io_payload->get_length( ). " todo, handle properly
+    IF iv_length >= 127.
+      BREAK-POINT.
+      " todo, handle properly
     ENDIF.
 
-    add_hex( lv_byte2 ).
+    add_hex( lv_byte ).
+
+  ENDMETHOD.
+
+
+  METHOD add_packet.
+
+    DATA: lv_byte   TYPE x,
+          lv_length TYPE i.
+
+    lv_byte = ii_packet->get_type( ) * 16 + iv_flags.
+
+    add_hex( lv_byte ).
+
+    IF io_payload IS SUPPLIED.
+      lv_length = io_payload->get_length( ).
+    ENDIF.
+    add_length( lv_length ).
 
     IF io_payload IS SUPPLIED.
       add_stream( io_payload ).
@@ -139,6 +159,14 @@ CLASS ZCL_MQTT_STREAM IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD eat_length.
+
+* todo, handle properly
+    eat_hex( 1 ).
+
+  ENDMETHOD.
+
+
   METHOD eat_packet.
 
     DATA: lv_int TYPE i.
@@ -176,7 +204,7 @@ CLASS ZCL_MQTT_STREAM IMPLEMENTATION.
       WHEN zif_mqtt_constants=>gc_packets-disconnect.
         ri_packet = NEW zcl_mqtt_packet_disconnect( ).
       WHEN OTHERS.
-* todo, RAISE EXCEPTION
+        ASSERT 0 = 1.
     ENDCASE.
 
     ri_packet->decode( me ).
@@ -205,7 +233,7 @@ CLASS ZCL_MQTT_STREAM IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD GET_LENGTH.
+  METHOD get_length.
 
     rv_length = xstrlen( mv_hex ).
 

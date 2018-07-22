@@ -6,13 +6,29 @@ public section.
 
   interfaces ZIF_MQTT_PACKET .
 
-  aliases DECODE
-    for ZIF_MQTT_PACKET~DECODE .
-  aliases ENCODE
-    for ZIF_MQTT_PACKET~ENCODE .
-  aliases GET_TYPE
-    for ZIF_MQTT_PACKET~GET_TYPE .
+  types:
+    ty_return_code TYPE x LENGTH 1 .
+
+  constants:
+    BEGIN OF gc_return_code,
+                 accepted                 TYPE ty_return_code VALUE '00',
+                 unacceptabe_protocol     TYPE ty_return_code VALUE '01',
+                 identifer_rejected       TYPE ty_return_code VALUE '02',
+                 server_unavailable       TYPE ty_return_code VALUE '03',
+                 bad_username_or_password TYPE ty_return_code VALUE '04',
+                 not_authorized           TYPE ty_return_code VALUE '05',
+               END OF gc_return_code .
+
+  methods GET_SESSION_PRESENT
+    returning
+      value(RV_SESSION_PRESENT) type ABAP_BOOL .
+  methods GET_RETURN_CODE
+    returning
+      value(RV_RETURN_CODE) type TY_RETURN_CODE .
 protected section.
+
+  data MV_SESSION_PRESENT type ABAP_BOOL .
+  data MV_RETURN_CODE type TY_RETURN_CODE .
 private section.
 ENDCLASS.
 
@@ -21,9 +37,36 @@ ENDCLASS.
 CLASS ZCL_MQTT_PACKET_CONNACK IMPLEMENTATION.
 
 
+  METHOD get_return_code.
+
+    rv_return_code = mv_return_code.
+
+  ENDMETHOD.
+
+
+  METHOD get_session_present.
+
+    rv_session_present = mv_session_present.
+
+  ENDMETHOD.
+
+
   METHOD zif_mqtt_packet~decode.
 
-* todo
+    ASSERT io_stream->eat_hex( 2 ) = '2002'.
+
+    CASE io_stream->eat_hex( 1 ).
+      WHEN '00'.
+        mv_session_present = abap_false.
+      WHEN '01'.
+        mv_session_present = abap_true.
+      WHEN OTHERS.
+        ASSERT 0 = 1.
+    ENDCASE.
+
+    mv_return_code = io_stream->eat_hex( 1 ).
+
+    ASSERT io_stream->get_length( ) = 0.
 
   ENDMETHOD.
 
@@ -31,11 +74,12 @@ CLASS ZCL_MQTT_PACKET_CONNACK IMPLEMENTATION.
   METHOD zif_mqtt_packet~encode.
 
 * todo
+    BREAK-POINT.
 
   ENDMETHOD.
 
 
-  METHOD ZIF_MQTT_PACKET~GET_TYPE.
+  METHOD zif_mqtt_packet~get_type.
 
     rv_value = zif_mqtt_constants=>gc_packets-connack.
 

@@ -6,13 +6,6 @@ public section.
 
   interfaces ZIF_MQTT_PACKET .
 
-  aliases DECODE
-    for ZIF_MQTT_PACKET~DECODE .
-  aliases ENCODE
-    for ZIF_MQTT_PACKET~ENCODE .
-  aliases GET_TYPE
-    for ZIF_MQTT_PACKET~GET_TYPE .
-
   types:
     ty_topics TYPE STANDARD TABLE OF string WITH DEFAULT KEY .
 
@@ -24,6 +17,9 @@ public section.
       !IT_TOPICS type TY_TOPICS
     returning
       value(RO_SUBSCRIBE) type ref to ZCL_MQTT_PACKET_SUBSCRIBE .
+  methods CONSTRUCTOR
+    importing
+      !IT_TOPICS type TY_TOPICS optional .
 protected section.
 
   data MT_TOPICS type TY_TOPICS .
@@ -35,14 +31,21 @@ ENDCLASS.
 CLASS ZCL_MQTT_PACKET_SUBSCRIBE IMPLEMENTATION.
 
 
-  METHOD GET_TOPICS.
+  METHOD constructor.
+
+    mt_topics = it_topics.
+
+  ENDMETHOD.
+
+
+  METHOD get_topics.
 
     rt_topics = mt_topics.
 
   ENDMETHOD.
 
 
-  METHOD SET_TOPICS.
+  METHOD set_topics.
 
     mt_topics = it_topics.
 
@@ -51,14 +54,14 @@ CLASS ZCL_MQTT_PACKET_SUBSCRIBE IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD ZIF_MQTT_PACKET~DECODE.
+  METHOD zif_mqtt_packet~decode.
 
     BREAK-POINT.
 
   ENDMETHOD.
 
 
-  METHOD ZIF_MQTT_PACKET~ENCODE.
+  METHOD zif_mqtt_packet~encode.
 
     ASSERT lines( mt_topics ) > 0.
 
@@ -83,7 +86,7 @@ CLASS ZCL_MQTT_PACKET_SUBSCRIBE IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD ZIF_MQTT_PACKET~GET_TYPE.
+  METHOD zif_mqtt_packet~get_type.
 
     rv_value = zif_mqtt_constants=>gc_packets-subscribe.
 

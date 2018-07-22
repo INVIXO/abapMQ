@@ -13,22 +13,21 @@ public section.
   aliases GET_TYPE
     for ZIF_MQTT_PACKET~GET_TYPE .
 
-  types:
-    BEGIN OF ty_message,
-             topic   TYPE string,
-             message TYPE xstring,
-           END OF ty_message .
-
   methods GET_MESSAGE
     returning
-      value(RS_MESSAGE) type TY_MESSAGE .
+      value(RS_MESSAGE) type ZIF_MQTT_PACKET=>TY_MESSAGE .
   methods SET_MESSAGE
     importing
-      !IS_MESSAGE type TY_MESSAGE .
-protected section.
+      !IS_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE .
+  methods CONSTRUCTOR .
+PROTECTED SECTION.
 
-  data MS_MESSAGE type TY_MESSAGE .
+  DATA ms_message TYPE zif_mqtt_packet=>ty_message .
 private section.
+
+  data MV_DUP_FLAG type ABAP_BOOL .
+  data MV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS .
+  data MV_RETAIN type ABAP_BOOL .
 ENDCLASS.
 
 
@@ -36,34 +35,57 @@ ENDCLASS.
 CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
 
 
-  METHOD GET_MESSAGE.
+  METHOD constructor.
+
+* todo, add iv_message as optional
+
+  ENDMETHOD.
+
+
+  METHOD get_message.
 
     rs_message = ms_message.
 
   ENDMETHOD.
 
 
-  METHOD SET_MESSAGE.
+  METHOD set_message.
 
     ms_message = is_message.
 
   ENDMETHOD.
 
 
-  METHOD ZIF_MQTT_PACKET~DECODE.
+  METHOD zif_mqtt_packet~decode.
 
-    io_stream->eat_hex( 2 ). " todo, fixed header
+    DATA(lv_hex) = io_stream->eat_hex( 1 ).
+
+    IF lv_hex MOD 2 = 1.
+      mv_retain = abap_true.
+    ENDIF.
+
+    mv_qos_level = ( lv_hex DIV 2 ) MOD 4.
+
+    IF lv_hex MOD 16 = 1.
+      mv_dup_flag = abap_true.
+    ENDIF.
+
+    io_stream->eat_length( ).
 
     ms_message-topic = io_stream->eat_utf8( ).
 
-* todo, packet identifier for QoS = 1 or 2
+    IF mv_qos_level > 0.
+      DATA(lv_packet_identifier) = io_stream->eat_hex( 2 ).
+    ENDIF.
 
     ms_message-message = io_stream->eat_hex( io_stream->get_length( ) ).
+
+    ASSERT io_stream->get_length( ) = 0.
 
   ENDMETHOD.
 
 
-  METHOD ZIF_MQTT_PACKET~ENCODE.
+  METHOD zif_mqtt_packet~encode.
 
     ASSERT NOT ms_message-topic IS INITIAL.
     ASSERT NOT ms_message-message IS INITIAL.
@@ -82,7 +104,7 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD ZIF_MQTT_PACKET~GET_TYPE.
+  METHOD zif_mqtt_packet~get_type.
 
     rv_value = zif_mqtt_constants=>gc_packets-publish.
 
