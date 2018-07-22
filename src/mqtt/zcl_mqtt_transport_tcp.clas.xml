@@ -13,6 +13,14 @@
     <FIXPT>X</FIXPT>
     <UNICODE>X</UNICODE>
    </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_MQTT_TRANSPORT_TCP</CLSNAME>
+     <CMPNAME>MI_CLIENT</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>APC framework: WebSocket client interface (do not implement)</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
   </asx:values>
  </asx:abap>
 </abapGit>

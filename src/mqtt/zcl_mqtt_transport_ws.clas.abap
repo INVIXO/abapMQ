@@ -67,7 +67,7 @@ CLASS ZCL_MQTT_TRANSPORT_WS IMPLEMENTATION.
 
   METHOD if_apc_wsp_event_handler~on_open.
 
-* todo?
+    RETURN.
 
   ENDMETHOD.
 

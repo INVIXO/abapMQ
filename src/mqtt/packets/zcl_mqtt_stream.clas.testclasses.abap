@@ -110,3 +110,87 @@ CLASS ltcl_stream IMPLEMENTATION.
   ENDMETHOD.
 
 ENDCLASS.
+
+
+CLASS ltcl_length DEFINITION FOR TESTING
+  DURATION SHORT
+  RISK LEVEL HARMLESS FINAL.
+
+  PRIVATE SECTION.
+    DATA:
+      mo_cut TYPE REF TO zcl_mqtt_stream.
+
+    METHODS:
+      setup,
+      test IMPORTING iv_hex    TYPE xstring
+                     iv_length TYPE i,
+      test01 FOR TESTING,
+      test02 FOR TESTING,
+      test03 FOR TESTING,
+      test04 FOR TESTING,
+      test05 FOR TESTING.
+
+ENDCLASS.
+
+CLASS ltcl_length IMPLEMENTATION.
+
+  METHOD setup.
+    mo_cut = NEW #( ).
+  ENDMETHOD.
+
+  METHOD test.
+
+    DATA(lv_length) = mo_cut->add_hex( iv_hex )->eat_length( ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = lv_length
+      exp = iv_length ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = mo_cut->get_length( )
+      exp = 0 ).
+
+    mo_cut->add_length( iv_length ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = mo_cut->get_hex( )
+      exp = iv_hex ).
+
+  ENDMETHOD.
+
+  METHOD test01.
+
+    test( iv_hex    = '02'
+          iv_length = 2 ).
+
+  ENDMETHOD.
+
+  METHOD test02.
+
+    test( iv_hex    = '8610'
+          iv_length = 2054 ).
+
+  ENDMETHOD.
+
+  METHOD test03.
+
+    test( iv_hex    = '86808001'
+          iv_length = 2097158 ).
+
+  ENDMETHOD.
+
+  METHOD test04.
+
+    test( iv_hex    = '80808001'
+          iv_length = 2097152 ).
+
+  ENDMETHOD.
+
+  METHOD test05.
+
+    test( iv_hex    = '7F'
+          iv_length = 127 ).
+
+  ENDMETHOD.
+
+ENDCLASS.

@@ -4,15 +4,16 @@ interface ZIF_MQTT_TRANSPORT
 
   methods CONNECT
     raising
-      ZCX_MQTT .
+      CX_APC_ERROR .
   methods DISCONNECT
     raising
-      ZCX_MQTT .
+      CX_APC_ERROR .
   methods SEND
     importing
       !II_PACKET type ref to ZIF_MQTT_PACKET
     raising
-      ZCX_MQTT .
+      ZCX_MQTT
+      CX_APC_ERROR .
   methods LISTEN
     importing
       !IV_TIMEOUT type I
