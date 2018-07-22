@@ -20,14 +20,13 @@ public section.
     importing
       !IS_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE .
   methods CONSTRUCTOR .
-PROTECTED SECTION.
+protected section.
 
-  DATA ms_message TYPE zif_mqtt_packet=>ty_message .
-private section.
-
+  data MS_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE .
   data MV_DUP_FLAG type ABAP_BOOL .
   data MV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS .
   data MV_RETAIN type ABAP_BOOL .
+private section.
 ENDCLASS.
 
 
@@ -96,9 +95,9 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
     lo_payload->add_hex( ms_message-message ).
 
     ro_stream = NEW #( ).
+* todo, flags
     ro_stream->add_packet(
       ii_packet  = me
-* todo, flags
       io_payload = lo_payload ).
 
   ENDMETHOD.

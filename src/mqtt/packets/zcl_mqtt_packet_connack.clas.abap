@@ -53,7 +53,9 @@ CLASS ZCL_MQTT_PACKET_CONNACK IMPLEMENTATION.
 
   METHOD zif_mqtt_packet~decode.
 
-    ASSERT io_stream->eat_hex( 2 ) = '2002'.
+    CONSTANTS: lc_header TYPE xstring VALUE '2002'.
+
+    ASSERT io_stream->eat_hex( 2 ) = lc_header.
 
     CASE io_stream->eat_hex( 1 ).
       WHEN '00'.

@@ -12,7 +12,9 @@ public section.
     importing
       !IV_URL type STRING
     returning
-      value(RI_TRANSPORT) type ref to ZIF_MQTT_TRANSPORT .
+      value(RI_TRANSPORT) type ref to ZIF_MQTT_TRANSPORT
+    raising
+      CX_APC_ERROR .
 PROTECTED SECTION.
 
   DATA mi_client TYPE REF TO if_apc_wsp_client .
@@ -60,7 +62,11 @@ CLASS ZCL_MQTT_TRANSPORT_WS IMPLEMENTATION.
   METHOD if_apc_wsp_event_handler~on_message.
 
     ms_message-received = abap_true.
-    ms_message-message = i_message->get_binary( ).
+    TRY.
+        ms_message-message = i_message->get_binary( ).
+      CATCH cx_apc_error.
+        ASSERT 0 = 1. " todo
+    ENDTRY.
 
   ENDMETHOD.
 

@@ -1,60 +1,60 @@
-CLASS zcl_mqtt_stream DEFINITION
-  PUBLIC
-  CREATE PUBLIC .
+class ZCL_MQTT_STREAM definition
+  public
+  create public .
 
-  PUBLIC SECTION.
+public section.
 
-    METHODS add_length
-      IMPORTING
-        !iv_length TYPE i .
-    METHODS add_hex
-      IMPORTING
-        !iv_hex          TYPE xsequence
-      RETURNING
-        VALUE(ro_stream) TYPE REF TO zcl_mqtt_stream .
-    METHODS add_packet
-      IMPORTING
-        !ii_packet       TYPE REF TO zif_mqtt_packet
-        !io_payload      TYPE REF TO zcl_mqtt_stream OPTIONAL
-        !iv_flags        TYPE i DEFAULT 0
-      RETURNING
-        VALUE(ro_stream) TYPE REF TO zcl_mqtt_stream .
-    METHODS add_stream
-      IMPORTING
-        !io_stream TYPE REF TO zcl_mqtt_stream .
-    METHODS add_utf8
-      IMPORTING
-        !iv_string       TYPE csequence
-      RETURNING
-        VALUE(ro_stream) TYPE REF TO zcl_mqtt_stream .
-    METHODS constructor
-      IMPORTING
-        !iv_hex TYPE xsequence OPTIONAL .
-    METHODS eat_hex
-      IMPORTING
-        !iv_length    TYPE i
-      RETURNING
-        VALUE(rv_hex) TYPE xstring .
-    METHODS eat_packet
-      RETURNING
-        VALUE(ri_packet) TYPE REF TO zif_mqtt_packet .
-    METHODS eat_utf8
-      RETURNING
-        VALUE(rv_string) TYPE string .
-    METHODS get_hex
-      RETURNING
-        VALUE(rv_hex) TYPE xstring .
-    METHODS get_length
-      RETURNING
-        VALUE(rv_length) TYPE i .
-    METHODS peek_hex
-      IMPORTING
-        !iv_length    TYPE i
-      RETURNING
-        VALUE(rv_hex) TYPE xstring .
-    METHODS eat_length
-      RETURNING
-        VALUE(rv_length) TYPE i .
+  methods ADD_HEX
+    importing
+      !IV_HEX type XSEQUENCE
+    returning
+      value(RO_STREAM) type ref to ZCL_MQTT_STREAM .
+  methods ADD_LENGTH
+    importing
+      !IV_LENGTH type I .
+  methods ADD_PACKET
+    importing
+      !II_PACKET type ref to ZIF_MQTT_PACKET
+      !IO_PAYLOAD type ref to ZCL_MQTT_STREAM optional
+      !IV_FLAGS type I default 0
+    returning
+      value(RO_STREAM) type ref to ZCL_MQTT_STREAM .
+  methods ADD_STREAM
+    importing
+      !IO_STREAM type ref to ZCL_MQTT_STREAM .
+  methods ADD_UTF8
+    importing
+      !IV_STRING type CSEQUENCE
+    returning
+      value(RO_STREAM) type ref to ZCL_MQTT_STREAM .
+  methods CONSTRUCTOR
+    importing
+      !IV_HEX type XSEQUENCE optional .
+  methods EAT_HEX
+    importing
+      !IV_LENGTH type I
+    returning
+      value(RV_HEX) type XSTRING .
+  methods EAT_LENGTH
+    returning
+      value(RV_LENGTH) type I .
+  methods EAT_PACKET
+    returning
+      value(RI_PACKET) type ref to ZIF_MQTT_PACKET .
+  methods EAT_UTF8
+    returning
+      value(RV_STRING) type STRING .
+  methods GET_HEX
+    returning
+      value(RV_HEX) type XSTRING .
+  methods GET_LENGTH
+    returning
+      value(RV_LENGTH) type I .
+  methods PEEK_HEX
+    importing
+      !IV_LENGTH type I
+    returning
+      value(RV_HEX) type XSTRING .
   PROTECTED SECTION.
 
     DATA mv_hex TYPE xstring .
@@ -133,8 +133,7 @@ CLASS ZCL_MQTT_STREAM IMPLEMENTATION.
 
   METHOD add_utf8.
 
-    DATA: lv_str TYPE xstring,
-          lv_len TYPE x LENGTH 2.
+    DATA: lv_len TYPE x LENGTH 2.
 
 
     DATA(lv_hex) = cl_binary_convert=>string_to_xstring_utf8( iv_string ).

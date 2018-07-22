@@ -1,25 +1,25 @@
-class ZCL_MQTT_PACKET_SUBSCRIBE definition
-  public
-  create public .
+CLASS zcl_mqtt_packet_subscribe DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_MQTT_PACKET .
+    INTERFACES zif_mqtt_packet .
 
-  types:
-    ty_topics TYPE STANDARD TABLE OF string WITH DEFAULT KEY .
+    TYPES:
+      ty_topics TYPE STANDARD TABLE OF string WITH EMPTY KEY .
 
-  methods GET_TOPICS
-    returning
-      value(RT_TOPICS) type TY_TOPICS .
-  methods SET_TOPICS
-    importing
-      !IT_TOPICS type TY_TOPICS
-    returning
-      value(RO_SUBSCRIBE) type ref to ZCL_MQTT_PACKET_SUBSCRIBE .
-  methods CONSTRUCTOR
-    importing
-      !IT_TOPICS type TY_TOPICS optional .
+    METHODS get_topics
+      RETURNING
+        VALUE(rt_topics) TYPE ty_topics .
+    METHODS set_topics
+      IMPORTING
+        !it_topics          TYPE ty_topics
+      RETURNING
+        VALUE(ro_subscribe) TYPE REF TO zcl_mqtt_packet_subscribe .
+    METHODS constructor
+      IMPORTING
+        !it_topics TYPE ty_topics OPTIONAL .
 protected section.
 
   data MT_TOPICS type TY_TOPICS .

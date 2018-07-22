@@ -79,7 +79,11 @@ CLASS ZCL_MQTT_TRANSPORT_TCP IMPLEMENTATION.
   METHOD if_apc_wsp_event_handler~on_message.
 
     ms_message-received = abap_true.
-    ms_message-message = i_message->get_binary( ).
+    TRY.
+        ms_message-message = i_message->get_binary( ).
+      CATCH cx_apc_error.
+        ASSERT 0 = 1. " todo
+    ENDTRY.
 
   ENDMETHOD.
 
@@ -120,22 +124,32 @@ CLASS ZCL_MQTT_TRANSPORT_TCP IMPLEMENTATION.
 
   METHOD zif_mqtt_transport~listen.
 
-    DATA: lv_length TYPE i.
+    DATA: lv_length     TYPE i,
+          lv_multiplier TYPE i VALUE 1.
 
 
     DATA(lo_stream) = NEW zcl_mqtt_stream( ).
 
-    DATA(lv_hex) = receive_byte( iv_timeout ).
-    lo_stream->add_hex( lv_hex ).
+    DATA(lv_byte) = receive_byte( iv_timeout ).
+    lo_stream->add_hex( lv_byte ).
 
-* todo, this is wrong, length should consider multiple bytes
-    lv_hex = receive_byte( iv_timeout ).
-    lo_stream->add_hex( lv_hex ).
-    lv_length = lv_hex.
+    DO.
+      ASSERT sy-index <= 4.
+
+      lv_byte = receive_byte( iv_timeout ).
+      lo_stream->add_hex( lv_byte ).
+
+      lv_length = lv_length + ( lv_byte MOD 128 ) * lv_multiplier.
+      lv_multiplier = lv_multiplier * 128.
+
+      IF lv_byte < 128.
+        EXIT.
+      ENDIF.
+    ENDDO.
 
     DO lv_length TIMES.
-      lv_hex = receive_byte( iv_timeout ).
-      lo_stream->add_hex( lv_hex ).
+      lv_byte = receive_byte( iv_timeout ).
+      lo_stream->add_hex( lv_byte ).
     ENDDO.
 
     ri_packet = lo_stream->eat_packet( ).

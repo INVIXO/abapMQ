@@ -1,4 +1,4 @@
-REPORT zabapmq_mqtt_new.
+REPORT zabapmq_mqtt_receive.
 
 SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-001.
 PARAMETERS:
@@ -35,11 +35,11 @@ FORM run RAISING cx_apc_error.
       li_transport->send( NEW zcl_mqtt_packet_connect( ) ).
 
       DATA(lo_connack) = CAST zcl_mqtt_packet_connack( li_transport->listen( p_timeou ) ).
-      WRITE: / 'CONNACK return code:', lo_connack->get_return_code( ).
+      WRITE: / 'CONNACK return code:'(003), lo_connack->get_return_code( ).
 
       li_transport->send( NEW zcl_mqtt_packet_subscribe( VALUE #( ( CONV #( p_topic ) ) ) ) ).
       DATA(lt_return_codes) = CAST zcl_mqtt_packet_suback( li_transport->listen( p_timeou ) )->get_return_codes( ).
-      WRITE: / 'SUBACK return code:', lt_return_codes[ 1 ].
+      WRITE: / 'SUBACK return code:'(004), lt_return_codes[ 1 ].
 
       WRITE: /.
       DO p_count TIMES.

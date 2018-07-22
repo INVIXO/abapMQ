@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <PROGDIR>
-    <NAME>ZABAPMQ_MQTT_NEW</NAME>
+    <NAME>ZABAPMQ_MQTT_RECEIVE</NAME>
     <STATE>A</STATE>
     <VARCL>X</VARCL>
     <SUBC>1</SUBC>
@@ -25,9 +25,21 @@
      <LENGTH>19</LENGTH>
     </item>
     <item>
+     <ID>I</ID>
+     <KEY>003</KEY>
+     <ENTRY>CONNACK return code:</ENTRY>
+     <LENGTH>40</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>004</KEY>
+     <ENTRY>SUBACK return code:</ENTRY>
+     <LENGTH>29</LENGTH>
+    </item>
+    <item>
      <ID>R</ID>
-     <ENTRY>Program ZABAPMQ_MQTT_NEW</ENTRY>
-     <LENGTH>24</LENGTH>
+     <ENTRY>MQTT: Receive messages</ENTRY>
+     <LENGTH>22</LENGTH>
     </item>
     <item>
      <ID>S</ID>
