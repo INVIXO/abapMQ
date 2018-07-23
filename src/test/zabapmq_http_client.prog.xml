@@ -32,8 +32,8 @@
     </item>
     <item>
      <ID>R</ID>
-     <ENTRY>Program ZABAPMQ_MQTT_CLIENT</ENTRY>
-     <LENGTH>27</LENGTH>
+     <ENTRY>abapMQ: HTTP client over TCP</ENTRY>
+     <LENGTH>28</LENGTH>
     </item>
     <item>
      <ID>S</ID>

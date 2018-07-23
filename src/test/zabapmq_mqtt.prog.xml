@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <PROGDIR>
-    <NAME>ZABAPMQ_MQTT_RECEIVE</NAME>
+    <NAME>ZABAPMQ_MQTT</NAME>
     <STATE>A</STATE>
     <VARCL>X</VARCL>
     <SUBC>1</SUBC>
@@ -15,7 +15,7 @@
     <item>
      <ID>I</ID>
      <KEY>001</KEY>
-     <ENTRY>Settings</ENTRY>
+     <ENTRY>Receive messages</ENTRY>
      <LENGTH>18</LENGTH>
     </item>
     <item>
@@ -37,9 +37,21 @@
      <LENGTH>29</LENGTH>
     </item>
     <item>
+     <ID>I</ID>
+     <KEY>005</KEY>
+     <ENTRY>Function</ENTRY>
+     <LENGTH>18</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>006</KEY>
+     <ENTRY>Publish message</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
      <ID>R</ID>
-     <ENTRY>MQTT: Receive messages</ENTRY>
-     <LENGTH>22</LENGTH>
+     <ENTRY>abapMQ: MQTT Test Client</ENTRY>
+     <LENGTH>24</LENGTH>
     </item>
     <item>
      <ID>S</ID>
@@ -55,9 +67,33 @@
     </item>
     <item>
      <ID>S</ID>
+     <KEY>P_MESS</KEY>
+     <ENTRY>Message</ENTRY>
+     <LENGTH>15</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
      <KEY>P_PORT</KEY>
      <ENTRY>Port</ENTRY>
      <LENGTH>12</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_PTOPIC</KEY>
+     <ENTRY>Topic</ENTRY>
+     <LENGTH>13</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_PUB</KEY>
+     <ENTRY>Publish message</ENTRY>
+     <LENGTH>23</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_REC</KEY>
+     <ENTRY>Receive messages</ENTRY>
+     <LENGTH>24</LENGTH>
     </item>
     <item>
      <ID>S</ID>

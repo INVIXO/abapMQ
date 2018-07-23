@@ -19,13 +19,33 @@ public section.
   methods SET_MESSAGE
     importing
       !IS_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE .
-  methods CONSTRUCTOR .
+  methods CONSTRUCTOR
+    importing
+      !IS_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE optional
+      !IV_DUP_FLAG type ABAP_BOOL optional
+      !IV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS optional
+      !IV_RETAIN type ABAP_BOOL optional .
 protected section.
 
   data MS_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE .
   data MV_DUP_FLAG type ABAP_BOOL .
   data MV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS .
   data MV_RETAIN type ABAP_BOOL .
+
+  class-methods DECODE_FLAGS
+    importing
+      !IV_FLAGS type I
+    exporting
+      !EV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS
+      !EV_RETAIN type ABAP_BOOL
+      !EV_DUP_FLAG type ABAP_BOOL .
+  class-methods ENCODE_FLAGS
+    importing
+      !IV_DUP_FLAG type ABAP_BOOL
+      !IV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS
+      !IV_RETAIN type ABAP_BOOL
+    returning
+      value(RV_FLAGS) type I .
 private section.
 ENDCLASS.
 
@@ -36,7 +56,40 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
 
   METHOD constructor.
 
-* todo, add iv_message as optional
+    ms_message   = is_message.
+    mv_dup_flag  = iv_dup_flag.
+    mv_qos_level = iv_qos_level.
+    mv_retain    = iv_retain.
+
+  ENDMETHOD.
+
+
+  METHOD decode_flags.
+
+    IF iv_flags MOD 2 = 1.
+      ev_retain = abap_true.
+    ENDIF.
+
+    ev_qos_level = ( iv_flags DIV 2 ) MOD 4.
+
+    IF iv_flags MOD 8 = 1.
+      ev_dup_flag = abap_true.
+    ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD encode_flags.
+
+    IF iv_retain = abap_true.
+      rv_flags = 1.
+    ENDIF.
+
+    rv_flags = rv_flags + iv_qos_level * 2.
+
+    IF iv_dup_flag = abap_true.
+      rv_flags = rv_flags + 8.
+    ENDIF.
 
   ENDMETHOD.
 
@@ -59,15 +112,13 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
 
     DATA(lv_hex) = io_stream->eat_hex( 1 ).
 
-    IF lv_hex MOD 2 = 1.
-      mv_retain = abap_true.
-    ENDIF.
-
-    mv_qos_level = ( lv_hex DIV 2 ) MOD 4.
-
-    IF lv_hex MOD 16 = 1.
-      mv_dup_flag = abap_true.
-    ENDIF.
+    zcl_mqtt_packet_publish=>decode_flags(
+      EXPORTING
+        iv_flags     = CONV #( lv_hex )
+      IMPORTING
+        ev_qos_level = mv_qos_level
+        ev_retain    = mv_retain
+        ev_dup_flag  = mv_dup_flag ).
 
     io_stream->eat_length( ).
 
@@ -90,12 +141,22 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
     ASSERT NOT ms_message-message IS INITIAL.
 
     DATA(lo_payload) = NEW zcl_mqtt_stream( ).
+
+    IF mv_qos_level <> 0.
+      BREAK-POINT.
 * todo, packet identifier for QoS = 1 or 2
+    ENDIF.
+
     lo_payload->add_utf8( ms_message-topic ).
     lo_payload->add_hex( ms_message-message ).
 
+    DATA(lv_flags) = encode_flags(
+      iv_dup_flag  = mv_dup_flag
+      iv_qos_level = mv_qos_level
+      iv_retain    = mv_retain ).
+
     ro_stream = NEW #( ).
-* todo, flags
+
     ro_stream->add_packet(
       ii_packet  = me
       io_payload = lo_payload ).

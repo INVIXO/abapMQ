@@ -21,7 +21,7 @@ CLASS ltcl_test IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals(
       act = lv_hex
-      exp = '001122334455' ).
+      exp = '820E00010009736F6D657468696E6700' ).
 
   ENDMETHOD.
 

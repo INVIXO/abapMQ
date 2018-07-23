@@ -9,7 +9,7 @@ CLASS ltcl_test DEFINITION FOR TESTING
 
     METHODS:
       setup,
-      decode FOR TESTING.
+      test FOR TESTING.
 
 ENDCLASS.
 
@@ -22,15 +22,21 @@ CLASS ltcl_test IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD decode.
+  METHOD test.
 
-    DATA(lo_stream) = NEW zcl_mqtt_stream( '20020000' ).
+    CONSTANTS: lc_hex TYPE xstring VALUE '20020000'.
+
+    DATA(lo_stream) = NEW zcl_mqtt_stream( lc_hex ).
 
     mo_cut->zif_mqtt_packet~decode( lo_stream ).
 
     cl_abap_unit_assert=>assert_equals(
       act = mo_cut->get_return_code( )
       exp = '00' ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = mo_cut->zif_mqtt_packet~encode( )->get_hex( )
+      exp = lc_hex ).
 
   ENDMETHOD.
 

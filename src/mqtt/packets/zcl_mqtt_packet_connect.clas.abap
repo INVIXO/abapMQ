@@ -138,8 +138,38 @@ CLASS ZCL_MQTT_PACKET_CONNECT IMPLEMENTATION.
 
   METHOD zif_mqtt_packet~decode.
 
-* todo
-    BREAK-POINT.
+    DATA: lv_length TYPE i.
+
+    ASSERT io_stream->eat_hex( 1 ) = '10'.
+    io_stream->eat_length( ).
+    ASSERT io_stream->eat_utf8( )  = lc_protocol_name.
+    ASSERT io_stream->eat_hex( 1 ) = lc_protocol_level.
+
+    DATA(ls_flags) = decode_flags( io_stream->eat_hex( 1 ) ).
+    mv_clean_session = ls_flags-clean_session.
+    mv_will_qos      = ls_flags-will_qos.
+    mv_will_retain   = ls_flags-will_retain.
+
+    mv_keep_alive = io_stream->eat_hex( 2 ).
+
+    mv_client_id = io_stream->eat_utf8( ).
+
+    IF ls_flags-will_flag = abap_true.
+      ms_will_message-topic = io_stream->eat_utf8( ).
+      lv_length = io_stream->eat_hex( 2 ).
+      ms_will_message-message = io_stream->eat_hex( lv_length ).
+    ENDIF.
+
+    IF ls_flags-username = abap_true.
+      mv_username = io_stream->eat_utf8( ).
+    ENDIF.
+
+    IF ls_flags-password = abap_true .
+      lv_length = io_stream->eat_hex( 2 ).
+      mv_password = io_stream->eat_hex( lv_length ).
+    ENDIF.
+
+    ASSERT io_stream->get_length( ) = 0.
 
   ENDMETHOD.
 

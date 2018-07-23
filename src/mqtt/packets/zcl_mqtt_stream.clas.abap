@@ -95,6 +95,10 @@ CLASS ZCL_MQTT_STREAM IMPLEMENTATION.
       add_hex( lv_byte ).
     ENDWHILE.
 
+    IF iv_length = 0.
+      add_hex( '00' ).
+    ENDIF.
+
   ENDMETHOD.
 
 

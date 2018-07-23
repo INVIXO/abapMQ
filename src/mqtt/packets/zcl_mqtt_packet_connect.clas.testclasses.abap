@@ -4,7 +4,9 @@ CLASS ltcl_test DEFINITION FOR TESTING
   RISK LEVEL HARMLESS FINAL.
 
   PRIVATE SECTION.
-    METHODS: test FOR TESTING.
+    METHODS:
+      test FOR TESTING,
+      test_new FOR TESTING.
 
 ENDCLASS.
 
@@ -13,13 +15,30 @@ CLASS ltcl_test IMPLEMENTATION.
 
   METHOD test.
 
+    CONSTANTS: lc_hex TYPE xstring VALUE '100C00044D5154540402001E0000'.
+
+    DATA(lo_encoded) = NEW zcl_mqtt_packet_connect( ).
+
+    DATA(lv_hex) = lo_encoded->zif_mqtt_packet~encode( )->get_hex( ).
+
+    cl_abap_unit_assert=>assert_equals(
+      act = lv_hex
+      exp = lc_hex ).
+
+  ENDMETHOD.
+
+  METHOD test_new.
+
+    CONSTANTS: lc_hex TYPE xstring VALUE '100C00044D5154540402001E0000'.
+
     DATA(lo_connect) = NEW zcl_mqtt_packet_connect( ).
+    lo_connect->zif_mqtt_packet~decode( NEW zcl_mqtt_stream( lc_hex ) ).
 
     DATA(lv_hex) = lo_connect->zif_mqtt_packet~encode( )->get_hex( ).
 
     cl_abap_unit_assert=>assert_equals(
       act = lv_hex
-      exp = '100C00044D5154540402001E0000' ).
+      exp = lc_hex ).
 
   ENDMETHOD.
 

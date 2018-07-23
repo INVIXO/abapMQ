@@ -75,8 +75,21 @@ CLASS ZCL_MQTT_PACKET_CONNACK IMPLEMENTATION.
 
   METHOD zif_mqtt_packet~encode.
 
-* todo
-    BREAK-POINT.
+    DATA(lo_payload) = NEW zcl_mqtt_stream( ).
+
+    IF mv_session_present = abap_true.
+      lo_payload->add_hex( '01' ).
+    ELSE.
+      lo_payload->add_hex( '00' ).
+    ENDIF.
+
+    lo_payload->add_hex( mv_return_code ).
+
+    ro_stream = NEW #( ).
+
+    ro_stream->add_packet(
+      ii_packet  = me
+      io_payload = lo_payload ).
 
   ENDMETHOD.
 

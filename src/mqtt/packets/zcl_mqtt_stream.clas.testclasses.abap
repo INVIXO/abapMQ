@@ -128,7 +128,8 @@ CLASS ltcl_length DEFINITION FOR TESTING
       test02 FOR TESTING,
       test03 FOR TESTING,
       test04 FOR TESTING,
-      test05 FOR TESTING.
+      test05 FOR TESTING,
+      test06 FOR TESTING.
 
 ENDCLASS.
 
@@ -190,6 +191,13 @@ CLASS ltcl_length IMPLEMENTATION.
 
     test( iv_hex    = '7F'
           iv_length = 127 ).
+
+  ENDMETHOD.
+
+  METHOD test06.
+
+    test( iv_hex    = '00'
+          iv_length = 0 ).
 
   ENDMETHOD.
 

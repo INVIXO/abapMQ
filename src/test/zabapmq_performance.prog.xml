@@ -32,8 +32,8 @@
     </item>
     <item>
      <ID>R</ID>
-     <ENTRY>Program ZABAPMQ_MQTT_CLIENT</ENTRY>
-     <LENGTH>27</LENGTH>
+     <ENTRY>abapMQ: Test TCP 1 byte performance</ENTRY>
+     <LENGTH>35</LENGTH>
     </item>
     <item>
      <ID>S</ID>
