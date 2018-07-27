@@ -23,8 +23,7 @@ CLASS ZCL_MQTT_PACKET_PINGREQ IMPLEMENTATION.
 
   METHOD zif_mqtt_packet~decode.
 
-* todo
-    BREAK-POINT.
+    ASSERT io_stream->eat_hex( 2 ) = 'C000'.
 
   ENDMETHOD.
 

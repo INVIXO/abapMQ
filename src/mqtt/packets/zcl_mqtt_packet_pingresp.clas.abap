@@ -5,13 +5,6 @@ class ZCL_MQTT_PACKET_PINGRESP definition
 public section.
 
   interfaces ZIF_MQTT_PACKET .
-
-  aliases DECODE
-    for ZIF_MQTT_PACKET~DECODE .
-  aliases ENCODE
-    for ZIF_MQTT_PACKET~ENCODE .
-  aliases GET_TYPE
-    for ZIF_MQTT_PACKET~GET_TYPE .
 protected section.
 private section.
 ENDCLASS.
@@ -23,16 +16,20 @@ CLASS ZCL_MQTT_PACKET_PINGRESP IMPLEMENTATION.
 
   METHOD zif_mqtt_packet~decode.
 
-* todo
-    BREAK-POINT.
+    ASSERT io_stream->eat_hex( 2 ) = 'D000'.
 
   ENDMETHOD.
 
 
   METHOD zif_mqtt_packet~encode.
 
-* todo
-    BREAK-POINT.
+    DATA(lo_payload) = NEW zcl_mqtt_stream( ).
+
+    ro_stream = NEW #( ).
+
+    ro_stream->add_packet(
+      ii_packet  = me
+      io_payload = lo_payload ).
 
   ENDMETHOD.
 

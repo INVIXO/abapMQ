@@ -16,8 +16,7 @@ CLASS ZCL_MQTT_PACKET_DISCONNECT IMPLEMENTATION.
 
   METHOD zif_mqtt_packet~decode.
 
-* todo
-    BREAK-POINT.
+    ASSERT io_stream->eat_hex( 2 ) = 'E000'.
 
   ENDMETHOD.
 

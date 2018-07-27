@@ -38,6 +38,7 @@ CLASS ZCL_MQTT_PACKET_SUBACK IMPLEMENTATION.
 
     io_stream->eat_length( ).
 
+* todo, packet identifier
     DATA(lv_identifier) = io_stream->eat_hex( 2 ).
 
     WHILE io_stream->get_length( ) > 0.
@@ -49,8 +50,20 @@ CLASS ZCL_MQTT_PACKET_SUBACK IMPLEMENTATION.
 
   METHOD zif_mqtt_packet~encode.
 
-* todo
-    BREAK-POINT.
+    DATA(lo_payload) = NEW zcl_mqtt_stream( ).
+
+* todo, packet identifier
+    lo_payload->add_hex( '0001' ).
+
+    LOOP AT mt_return_codes INTO DATA(lv_return_code).
+      lo_payload->add_hex( lv_return_code ).
+    ENDLOOP.
+
+    ro_stream = NEW #( ).
+
+    ro_stream->add_packet(
+      ii_packet  = me
+      io_payload = lo_payload ).
 
   ENDMETHOD.
 
