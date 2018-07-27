@@ -4,11 +4,15 @@ INTERFACE zif_mqtt_packet
 
   TYPES ty_qos TYPE i.
 
+  TYPES: ty_topic TYPE string.
+
   TYPES:
     BEGIN OF ty_message,
-      topic   TYPE string,
+      topic   TYPE ty_topic,
       message TYPE xstring,
     END OF ty_message .
+
+  TYPES: ty_topics_tt TYPE STANDARD TABLE OF ty_topic WITH EMPTY KEY.
 
   CONSTANTS: BEGIN OF gc_qos,
                at_most_once  TYPE ty_qos VALUE 0,
