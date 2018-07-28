@@ -37,19 +37,19 @@
     </item>
     <item>
      <ID>S</ID>
-     <KEY>BYTES</KEY>
+     <KEY>P_BYTES</KEY>
      <ENTRY>Bytes</ENTRY>
      <LENGTH>13</LENGTH>
     </item>
     <item>
      <ID>S</ID>
-     <KEY>HOST</KEY>
+     <KEY>P_HOST</KEY>
      <ENTRY>Host</ENTRY>
      <LENGTH>12</LENGTH>
     </item>
     <item>
      <ID>S</ID>
-     <KEY>PORT</KEY>
+     <KEY>P_PORT</KEY>
      <ENTRY>Port</ENTRY>
      <LENGTH>12</LENGTH>
     </item>

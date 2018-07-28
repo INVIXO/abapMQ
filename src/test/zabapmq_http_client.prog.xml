@@ -37,7 +37,7 @@
     </item>
     <item>
      <ID>S</ID>
-     <KEY>HOST</KEY>
+     <KEY>P_HOST</KEY>
      <ENTRY>Host</ENTRY>
      <LENGTH>12</LENGTH>
     </item>

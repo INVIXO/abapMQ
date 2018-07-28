@@ -77,12 +77,16 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
 
     IF iv_flags MOD 2 = 1.
       ev_retain = abap_true.
+    ELSE.
+      ev_retain = abap_false.
     ENDIF.
 
     ev_qos_level = ( iv_flags DIV 2 ) MOD 4.
 
     IF iv_flags MOD 8 = 1.
       ev_dup_flag = abap_true.
+    ELSE.
+      ev_dup_flag = abap_false.
     ENDIF.
 
   ENDMETHOD.

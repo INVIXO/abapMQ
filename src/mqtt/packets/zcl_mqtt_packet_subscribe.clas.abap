@@ -84,8 +84,20 @@ CLASS ZCL_MQTT_PACKET_SUBSCRIBE IMPLEMENTATION.
 
   METHOD zif_mqtt_packet~decode.
 
-* todo
-    BREAK-POINT.
+    DATA: ls_topic LIKE LINE OF mt_topics.
+
+
+    ASSERT io_stream->eat_hex( 1 ) = '82'.
+
+    io_stream->eat_length( ).
+
+    mv_packet_identifier = io_stream->eat_hex( 2 ).
+
+    WHILE io_stream->get_length( ) > 0.
+      ls_topic-topic = io_stream->eat_utf8( ).
+      ls_topic-qos = io_stream->eat_hex( 1 ).
+      APPEND ls_topic TO mt_topics.
+    ENDWHILE.
 
   ENDMETHOD.
 

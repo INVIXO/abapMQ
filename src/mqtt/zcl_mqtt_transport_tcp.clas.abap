@@ -65,6 +65,7 @@ CLASS ZCL_MQTT_TRANSPORT_TCP IMPLEMENTATION.
   METHOD if_apc_wsp_event_handler~on_close.
 
 * todo?
+    RETURN.
 
   ENDMETHOD.
 
@@ -72,6 +73,7 @@ CLASS ZCL_MQTT_TRANSPORT_TCP IMPLEMENTATION.
   METHOD if_apc_wsp_event_handler~on_error.
 
 * todo?
+    RETURN.
 
   ENDMETHOD.
 

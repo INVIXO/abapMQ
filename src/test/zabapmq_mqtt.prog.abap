@@ -64,14 +64,16 @@ FORM run RAISING cx_apc_error.
     CATCH zcx_mqtt_timeout.
       WRITE: / 'timeout'.
     CATCH zcx_mqtt.
-      BREAK-POINT.
+      WRITE: / 'Error'.
   ENDTRY.
 
 ENDFORM.
 
 FORM receive USING pi_transport TYPE REF TO zif_mqtt_transport RAISING zcx_mqtt cx_apc_error.
 
-  pi_transport->send( NEW zcl_mqtt_packet_subscribe( VALUE #( ( CONV #( p_topic ) ) ) ) ).
+  pi_transport->send( NEW zcl_mqtt_packet_subscribe(
+    it_topics            = VALUE #( ( topic = CONV #( p_topic ) ) )
+    iv_packet_identifier = '0001' ) ).
   DATA(lt_return_codes) = CAST zcl_mqtt_packet_suback( pi_transport->listen( p_timeou ) )->get_return_codes( ).
   WRITE: / 'SUBACK return code:'(004), lt_return_codes[ 1 ].
 

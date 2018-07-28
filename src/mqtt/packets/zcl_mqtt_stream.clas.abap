@@ -120,6 +120,8 @@ CLASS ZCL_MQTT_STREAM IMPLEMENTATION.
       add_stream( io_payload ).
     ENDIF.
 
+    ro_stream = me.
+
   ENDMETHOD.
 
 

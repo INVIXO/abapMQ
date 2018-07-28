@@ -165,7 +165,7 @@ CLASS ZCL_MQTT_PACKET_CONNECT IMPLEMENTATION.
       mv_username = io_stream->eat_utf8( ).
     ENDIF.
 
-    IF ls_flags-password = abap_true .
+    IF ls_flags-password = abap_true.
       lv_length = io_stream->eat_hex( 2 ).
       mv_password = io_stream->eat_hex( lv_length ).
     ENDIF.
