@@ -1,12 +1,12 @@
-class ZCL_MQTT_PACKET_PINGRESP definition
-  public
-  create public .
+CLASS zcl_mqtt_packet_pingresp DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_MQTT_PACKET .
-protected section.
-private section.
+    INTERFACES zif_mqtt_packet .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
 

@@ -6,8 +6,13 @@ CLASS zcl_mqtt_packet_subscribe DEFINITION
 
     INTERFACES zif_mqtt_packet .
 
+    TYPES: BEGIN OF ty_topic,
+             topic TYPE zif_mqtt_packet=>ty_topic,
+             qos   TYPE zif_mqtt_packet=>ty_qos,
+           END OF ty_topic.
+
     TYPES:
-      ty_topics TYPE STANDARD TABLE OF string WITH EMPTY KEY .
+      ty_topics TYPE STANDARD TABLE OF ty_topic WITH EMPTY KEY .
 
     METHODS get_topics
       RETURNING
@@ -19,11 +24,19 @@ CLASS zcl_mqtt_packet_subscribe DEFINITION
         VALUE(ro_subscribe) TYPE REF TO zcl_mqtt_packet_subscribe .
     METHODS constructor
       IMPORTING
-        !it_topics TYPE ty_topics OPTIONAL .
-protected section.
+        !it_topics            TYPE ty_topics OPTIONAL
+        !iv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier OPTIONAL .
+    METHODS get_packet_identifier
+      RETURNING
+        VALUE(rv_packet_identifier) TYPE zif_mqtt_packet=>ty_packet_identifier .
+    METHODS set_packet_identifier
+      IMPORTING
+        !iv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier .
+  PROTECTED SECTION.
 
-  data MT_TOPICS type TY_TOPICS .
-private section.
+    DATA mt_topics TYPE ty_topics .
+    DATA mv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier .
+  PRIVATE SECTION.
 ENDCLASS.
 
 
@@ -34,6 +47,14 @@ CLASS ZCL_MQTT_PACKET_SUBSCRIBE IMPLEMENTATION.
   METHOD constructor.
 
     mt_topics = it_topics.
+    mv_packet_identifier = iv_packet_identifier.
+
+  ENDMETHOD.
+
+
+  METHOD get_packet_identifier.
+
+    rv_packet_identifier = mv_packet_identifier.
 
   ENDMETHOD.
 
@@ -41,6 +62,13 @@ CLASS ZCL_MQTT_PACKET_SUBSCRIBE IMPLEMENTATION.
   METHOD get_topics.
 
     rt_topics = mt_topics.
+
+  ENDMETHOD.
+
+
+  METHOD set_packet_identifier.
+
+    mv_packet_identifier = iv_packet_identifier.
 
   ENDMETHOD.
 
@@ -56,6 +84,7 @@ CLASS ZCL_MQTT_PACKET_SUBSCRIBE IMPLEMENTATION.
 
   METHOD zif_mqtt_packet~decode.
 
+* todo
     BREAK-POINT.
 
   ENDMETHOD.
@@ -68,12 +97,12 @@ CLASS ZCL_MQTT_PACKET_SUBSCRIBE IMPLEMENTATION.
 
     DATA(lo_payload) = NEW zcl_mqtt_stream( ).
 
-* todo, packet identifier, 2 byte
-    lo_payload->add_hex( '0001' ).
+    ASSERT NOT mv_packet_identifier IS INITIAL.
+    lo_payload->add_hex( mv_packet_identifier ).
 
-    LOOP AT mt_topics INTO DATA(lv_topic).
-      lo_payload->add_utf8( lv_topic ).
-      lo_payload->add_hex( '00' ). " todo QoS
+    LOOP AT mt_topics INTO DATA(ls_topic).
+      lo_payload->add_utf8( ls_topic-topic ).
+      lo_payload->add_hex( CONV xstring( ls_topic-qos ) ).
     ENDLOOP.
 
     ro_stream = NEW #( ).

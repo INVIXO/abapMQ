@@ -1,35 +1,35 @@
-class ZCL_MQTT_PACKET_CONNACK definition
-  public
-  create public .
+CLASS zcl_mqtt_packet_connack DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_MQTT_PACKET .
+    INTERFACES zif_mqtt_packet .
 
-  types:
-    ty_return_code TYPE x LENGTH 1 .
+    TYPES:
+      ty_return_code TYPE x LENGTH 1 .
 
-  constants:
-    BEGIN OF gc_return_code,
-                 accepted                 TYPE ty_return_code VALUE '00',
-                 unacceptabe_protocol     TYPE ty_return_code VALUE '01',
-                 identifer_rejected       TYPE ty_return_code VALUE '02',
-                 server_unavailable       TYPE ty_return_code VALUE '03',
-                 bad_username_or_password TYPE ty_return_code VALUE '04',
-                 not_authorized           TYPE ty_return_code VALUE '05',
-               END OF gc_return_code .
+    CONSTANTS:
+      BEGIN OF gc_return_code,
+        accepted                 TYPE ty_return_code VALUE '00',
+        unacceptabe_protocol     TYPE ty_return_code VALUE '01',
+        identifer_rejected       TYPE ty_return_code VALUE '02',
+        server_unavailable       TYPE ty_return_code VALUE '03',
+        bad_username_or_password TYPE ty_return_code VALUE '04',
+        not_authorized           TYPE ty_return_code VALUE '05',
+      END OF gc_return_code .
 
-  methods GET_SESSION_PRESENT
-    returning
-      value(RV_SESSION_PRESENT) type ABAP_BOOL .
-  methods GET_RETURN_CODE
-    returning
-      value(RV_RETURN_CODE) type TY_RETURN_CODE .
-protected section.
+    METHODS get_session_present
+      RETURNING
+        VALUE(rv_session_present) TYPE abap_bool .
+    METHODS get_return_code
+      RETURNING
+        VALUE(rv_return_code) TYPE ty_return_code .
+  PROTECTED SECTION.
 
-  data MV_SESSION_PRESENT type ABAP_BOOL .
-  data MV_RETURN_CODE type TY_RETURN_CODE .
-private section.
+    DATA mv_session_present TYPE abap_bool .
+    DATA mv_return_code TYPE ty_return_code .
+  PRIVATE SECTION.
 ENDCLASS.
 
 

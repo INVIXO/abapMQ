@@ -1,23 +1,37 @@
-class ZCL_MQTT_PACKET_SUBACK definition
-  public
-  create public .
+CLASS zcl_mqtt_packet_suback DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_MQTT_PACKET .
+    INTERFACES zif_mqtt_packet .
 
-  types:
-    ty_hex TYPE x LENGTH 1 .
-  types:
-    ty_return_codes TYPE STANDARD TABLE OF ty_hex WITH EMPTY KEY .
+    TYPES:
+      ty_hex TYPE x LENGTH 1 .
+    TYPES:
+      ty_return_codes TYPE STANDARD TABLE OF ty_hex WITH EMPTY KEY .
 
-  methods GET_RETURN_CODES
-    returning
-      value(RT_RETURN_CODES) type TY_RETURN_CODES .
-protected section.
+    METHODS set_return_codes
+      IMPORTING
+        !it_return_codes TYPE ty_return_codes .
+    METHODS get_return_codes
+      RETURNING
+        VALUE(rt_return_codes) TYPE ty_return_codes .
+    METHODS constructor
+      IMPORTING
+        !it_return_codes      TYPE ty_return_codes OPTIONAL
+        !iv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier OPTIONAL .
+    METHODS get_packet_identifier
+      RETURNING
+        VALUE(rv_packet_identifier) TYPE zif_mqtt_packet=>ty_packet_identifier .
+    METHODS set_packet_identifier
+      IMPORTING
+        !iv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier .
+  PROTECTED SECTION.
 
-  data MT_RETURN_CODES type TY_RETURN_CODES .
-private section.
+    DATA mt_return_codes TYPE ty_return_codes .
+    DATA mv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier .
+  PRIVATE SECTION.
 ENDCLASS.
 
 
@@ -25,9 +39,38 @@ ENDCLASS.
 CLASS ZCL_MQTT_PACKET_SUBACK IMPLEMENTATION.
 
 
+  METHOD constructor.
+
+    mv_packet_identifier = iv_packet_identifier.
+    mt_return_codes = it_return_codes.
+
+  ENDMETHOD.
+
+
+  METHOD get_packet_identifier.
+
+    rv_packet_identifier = mv_packet_identifier.
+
+  ENDMETHOD.
+
+
   METHOD get_return_codes.
 
     rt_return_codes = mt_return_codes.
+
+  ENDMETHOD.
+
+
+  METHOD set_packet_identifier.
+
+    mv_packet_identifier = iv_packet_identifier.
+
+  ENDMETHOD.
+
+
+  METHOD set_return_codes.
+
+    mt_return_codes = it_return_codes.
 
   ENDMETHOD.
 
@@ -38,8 +81,7 @@ CLASS ZCL_MQTT_PACKET_SUBACK IMPLEMENTATION.
 
     io_stream->eat_length( ).
 
-* todo, packet identifier
-    DATA(lv_identifier) = io_stream->eat_hex( 2 ).
+    mv_packet_identifier = io_stream->eat_hex( 2 ).
 
     WHILE io_stream->get_length( ) > 0.
       APPEND io_stream->eat_hex( 1 ) TO mt_return_codes.
@@ -52,8 +94,8 @@ CLASS ZCL_MQTT_PACKET_SUBACK IMPLEMENTATION.
 
     DATA(lo_payload) = NEW zcl_mqtt_stream( ).
 
-* todo, packet identifier
-    lo_payload->add_hex( '0001' ).
+    ASSERT NOT mv_packet_identifier IS INITIAL.
+    lo_payload->add_hex( mv_packet_identifier ).
 
     LOOP AT mt_return_codes INTO DATA(lv_return_code).
       lo_payload->add_hex( lv_return_code ).

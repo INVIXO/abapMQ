@@ -1,53 +1,56 @@
-class ZCL_MQTT_PACKET_CONNECT definition
-  public
-  create public .
+CLASS zcl_mqtt_packet_connect DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_MQTT_PACKET .
+    INTERFACES zif_mqtt_packet .
 
-  methods CONSTRUCTOR
-    importing
-      !IV_CLEAN_SESSION type ABAP_BOOL default ABAP_TRUE
-      !IV_USERNAME type STRING optional
-      !IV_PASSWORD type STRING optional
-      !IV_CLIENT_ID type STRING optional
-      !IV_KEEP_ALIVE type I default 30 .
-protected section.
+    METHODS constructor
+      IMPORTING
+        !iv_clean_session TYPE abap_bool DEFAULT abap_true
+        !iv_username      TYPE string OPTIONAL
+        !iv_password      TYPE string OPTIONAL
+        !iv_client_id     TYPE string OPTIONAL
+        iv_will_qos       TYPE zif_mqtt_packet=>ty_qos OPTIONAL
+        is_will_message   TYPE zif_mqtt_packet=>ty_message OPTIONAL
+        iv_will_retain    TYPE abap_bool OPTIONAL
+        !iv_keep_alive    TYPE i DEFAULT 30 .
+  PROTECTED SECTION.
 
-  types:
-    BEGIN OF ty_flags,
-      username      TYPE abap_bool,
-      password      TYPE abap_bool,
-      will_retain   TYPE abap_bool,
-      will_qos      TYPE zif_mqtt_packet=>ty_qos,
-      will_flag     TYPE abap_bool,
-      clean_session TYPE abap_bool,
-    END OF ty_flags .
+    TYPES:
+      BEGIN OF ty_flags,
+        username      TYPE abap_bool,
+        password      TYPE abap_bool,
+        will_retain   TYPE abap_bool,
+        will_qos      TYPE zif_mqtt_packet=>ty_qos,
+        will_flag     TYPE abap_bool,
+        clean_session TYPE abap_bool,
+      END OF ty_flags .
 
-  constants LC_PROTOCOL_NAME type STRING value 'MQTT' ##NO_TEXT.
-  constants LC_PROTOCOL_LEVEL type XSTRING value '04' ##NO_TEXT.
-  data MV_USERNAME type STRING .
-  data MV_PASSWORD type XSTRING .
-  data MV_CLIENT_ID type STRING .
-  data MV_WILL_QOS type ZIF_MQTT_PACKET=>TY_QOS .
-  data MS_WILL_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE .
-  data MV_WILL_RETAIN type ABAP_BOOL .
-  data:
-    mv_keep_alive TYPE x LENGTH 2 .
-  data MV_CLEAN_SESSION type ABAP_BOOL .
+    CONSTANTS lc_protocol_name TYPE string VALUE 'MQTT' ##NO_TEXT.
+    CONSTANTS lc_protocol_level TYPE xstring VALUE '04' ##NO_TEXT.
+    DATA mv_username TYPE string .
+    DATA mv_password TYPE xstring .
+    DATA mv_client_id TYPE string .
+    DATA mv_will_qos TYPE zif_mqtt_packet=>ty_qos .
+    DATA ms_will_message TYPE zif_mqtt_packet=>ty_message .
+    DATA mv_will_retain TYPE abap_bool .
+    DATA:
+      mv_keep_alive TYPE x LENGTH 2 .
+    DATA mv_clean_session TYPE abap_bool .
 
-  class-methods DECODE_FLAGS
-    importing
-      !IV_HEX type XSEQUENCE
-    returning
-      value(RS_FLAGS) type TY_FLAGS .
-  class-methods ENCODE_FLAGS
-    importing
-      !IS_FLAGS type TY_FLAGS
-    returning
-      value(RV_HEX) type XSTRING .
-private section.
+    CLASS-METHODS decode_flags
+      IMPORTING
+        !iv_hex         TYPE xsequence
+      RETURNING
+        VALUE(rs_flags) TYPE ty_flags .
+    CLASS-METHODS encode_flags
+      IMPORTING
+        !is_flags     TYPE ty_flags
+      RETURNING
+        VALUE(rv_hex) TYPE xstring .
+  PRIVATE SECTION.
 ENDCLASS.
 
 
@@ -62,11 +65,9 @@ CLASS ZCL_MQTT_PACKET_CONNECT IMPLEMENTATION.
     mv_keep_alive    = iv_keep_alive.
     mv_password      = iv_password.
     mv_username      = iv_username.
-
-* todo
-*ms_will_message
-*mv_will_qos
-*mv_will_retain
+    ms_will_message  = is_will_message.
+    mv_will_qos      = iv_will_qos.
+    mv_will_retain   = iv_will_retain.
 
   ENDMETHOD.
 

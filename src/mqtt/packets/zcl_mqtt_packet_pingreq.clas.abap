@@ -1,19 +1,19 @@
-class ZCL_MQTT_PACKET_PINGREQ definition
-  public
-  create public .
+CLASS zcl_mqtt_packet_pingreq DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_MQTT_PACKET .
+    INTERFACES zif_mqtt_packet .
 
-  aliases DECODE
-    for ZIF_MQTT_PACKET~DECODE .
-  aliases ENCODE
-    for ZIF_MQTT_PACKET~ENCODE .
-  aliases GET_TYPE
-    for ZIF_MQTT_PACKET~GET_TYPE .
-protected section.
-private section.
+    ALIASES decode
+      FOR zif_mqtt_packet~decode .
+    ALIASES encode
+      FOR zif_mqtt_packet~encode .
+    ALIASES get_type
+      FOR zif_mqtt_packet~get_type .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
 

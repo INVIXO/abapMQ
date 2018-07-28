@@ -15,7 +15,7 @@ CLASS ltcl_test IMPLEMENTATION.
 
     DATA(lo_subscribe) = NEW zcl_mqtt_packet_subscribe( ).
 
-    lo_subscribe->set_topics( VALUE #( ( |something| ) ) ).
+    lo_subscribe->set_topics( VALUE #( ( topic = |something| ) ) ).
 
     DATA(lv_hex) = lo_subscribe->zif_mqtt_packet~encode( )->get_hex( ).
 

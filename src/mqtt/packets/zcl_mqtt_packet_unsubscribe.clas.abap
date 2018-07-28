@@ -14,10 +14,18 @@ CLASS zcl_mqtt_packet_unsubscribe DEFINITION
         !it_topics TYPE zif_mqtt_packet=>ty_topics_tt .
     METHODS constructor
       IMPORTING
-        !it_topics TYPE zif_mqtt_packet=>ty_topics_tt OPTIONAL .
+        !it_topics            TYPE zif_mqtt_packet=>ty_topics_tt OPTIONAL
+        !iv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier OPTIONAL .
+    METHODS get_packet_identifier
+      RETURNING
+        VALUE(rv_packet_identifier) TYPE zif_mqtt_packet=>ty_packet_identifier .
+    METHODS set_packet_identifier
+      IMPORTING
+        !iv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier .
   PROTECTED SECTION.
 
     DATA mt_topics TYPE zif_mqtt_packet=>ty_topics_tt .
+    DATA mv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier .
   PRIVATE SECTION.
 ENDCLASS.
 
@@ -29,6 +37,14 @@ CLASS ZCL_MQTT_PACKET_UNSUBSCRIBE IMPLEMENTATION.
   METHOD constructor.
 
     mt_topics = it_topics.
+    mv_packet_identifier = iv_packet_identifier.
+
+  ENDMETHOD.
+
+
+  METHOD get_packet_identifier.
+
+    rv_packet_identifier = mv_packet_identifier.
 
   ENDMETHOD.
 
@@ -36,6 +52,13 @@ CLASS ZCL_MQTT_PACKET_UNSUBSCRIBE IMPLEMENTATION.
   METHOD get_topics.
 
     rt_topics = mt_topics.
+
+  ENDMETHOD.
+
+
+  METHOD set_packet_identifier.
+
+    mv_packet_identifier = iv_packet_identifier.
 
   ENDMETHOD.
 
@@ -55,8 +78,7 @@ CLASS ZCL_MQTT_PACKET_UNSUBSCRIBE IMPLEMENTATION.
 
     io_stream->eat_length( ).
 
-* todo, packet identifier
-    io_stream->eat_hex( 2 ).
+    mv_packet_identifier = io_stream->eat_hex( 2 ).
 
     WHILE io_stream->get_length( ) > 0.
       APPEND io_stream->eat_utf8( ) TO mt_topics.
@@ -71,11 +93,10 @@ CLASS ZCL_MQTT_PACKET_UNSUBSCRIBE IMPLEMENTATION.
 
     DATA(lo_payload) = NEW zcl_mqtt_stream( ).
 
-* todo, packet identifier
-    lo_payload->add_hex( '0001' ).
+    ASSERT NOT mv_packet_identifier IS INITIAL.
+    lo_payload->add_hex( mv_packet_identifier ).
 
     ASSERT lines( mt_topics ) > 0.
-
     LOOP AT mt_topics INTO DATA(lv_topic).
       lo_payload->add_utf8( lv_topic ).
     ENDLOOP.

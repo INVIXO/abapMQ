@@ -1,52 +1,60 @@
-class ZCL_MQTT_PACKET_PUBLISH definition
-  public
-  create public .
+CLASS zcl_mqtt_packet_publish DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_MQTT_PACKET .
+    INTERFACES zif_mqtt_packet .
 
-  aliases DECODE
-    for ZIF_MQTT_PACKET~DECODE .
-  aliases ENCODE
-    for ZIF_MQTT_PACKET~ENCODE .
-  aliases GET_TYPE
-    for ZIF_MQTT_PACKET~GET_TYPE .
+    ALIASES decode
+      FOR zif_mqtt_packet~decode .
+    ALIASES encode
+      FOR zif_mqtt_packet~encode .
+    ALIASES get_type
+      FOR zif_mqtt_packet~get_type .
 
-  methods GET_MESSAGE
-    returning
-      value(RS_MESSAGE) type ZIF_MQTT_PACKET=>TY_MESSAGE .
-  methods SET_MESSAGE
-    importing
-      !IS_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE .
-  methods CONSTRUCTOR
-    importing
-      !IS_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE optional
-      !IV_DUP_FLAG type ABAP_BOOL optional
-      !IV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS optional
-      !IV_RETAIN type ABAP_BOOL optional .
-protected section.
+    METHODS get_message
+      RETURNING
+        VALUE(rs_message) TYPE zif_mqtt_packet=>ty_message .
+    METHODS set_message
+      IMPORTING
+        !is_message TYPE zif_mqtt_packet=>ty_message .
+    METHODS constructor
+      IMPORTING
+        !is_message           TYPE zif_mqtt_packet=>ty_message OPTIONAL
+        !iv_dup_flag          TYPE abap_bool OPTIONAL
+        !iv_qos_level         TYPE zif_mqtt_packet=>ty_qos OPTIONAL
+        !iv_retain            TYPE abap_bool OPTIONAL
+        !iv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier OPTIONAL .
+    METHODS get_packet_identifier
+      RETURNING
+        VALUE(rv_packet_identifier) TYPE zif_mqtt_packet=>ty_packet_identifier .
+    METHODS set_packet_identifier
+      IMPORTING
+        !iv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier .
+  PROTECTED SECTION.
 
-  data MS_MESSAGE type ZIF_MQTT_PACKET=>TY_MESSAGE .
-  data MV_DUP_FLAG type ABAP_BOOL .
-  data MV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS .
-  data MV_RETAIN type ABAP_BOOL .
+    DATA ms_message TYPE zif_mqtt_packet=>ty_message .
+    DATA mv_dup_flag TYPE abap_bool .
+    DATA mv_qos_level TYPE zif_mqtt_packet=>ty_qos .
+    DATA mv_retain TYPE abap_bool .
+    DATA mv_packet_identifier TYPE zif_mqtt_packet=>ty_packet_identifier .
 
-  class-methods DECODE_FLAGS
-    importing
-      !IV_FLAGS type I
-    exporting
-      !EV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS
-      !EV_RETAIN type ABAP_BOOL
-      !EV_DUP_FLAG type ABAP_BOOL .
-  class-methods ENCODE_FLAGS
-    importing
-      !IV_DUP_FLAG type ABAP_BOOL
-      !IV_QOS_LEVEL type ZIF_MQTT_PACKET=>TY_QOS
-      !IV_RETAIN type ABAP_BOOL
-    returning
-      value(RV_FLAGS) type I .
-private section.
+    CLASS-METHODS decode_flags
+      IMPORTING
+        !iv_flags     TYPE i
+      EXPORTING
+        !ev_qos_level TYPE zif_mqtt_packet=>ty_qos
+        !ev_retain    TYPE abap_bool
+        !ev_dup_flag  TYPE abap_bool .
+    CLASS-METHODS encode_flags
+      IMPORTING
+        !iv_dup_flag    TYPE abap_bool
+        !iv_qos_level   TYPE zif_mqtt_packet=>ty_qos
+        !iv_retain      TYPE abap_bool
+      RETURNING
+        VALUE(rv_flags) TYPE i .
+  PRIVATE SECTION.
 ENDCLASS.
 
 
@@ -60,6 +68,7 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
     mv_dup_flag  = iv_dup_flag.
     mv_qos_level = iv_qos_level.
     mv_retain    = iv_retain.
+    mv_packet_identifier = iv_packet_identifier.
 
   ENDMETHOD.
 
@@ -101,9 +110,23 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_packet_identifier.
+
+    rv_packet_identifier = mv_packet_identifier.
+
+  ENDMETHOD.
+
+
   METHOD set_message.
 
     ms_message = is_message.
+
+  ENDMETHOD.
+
+
+  METHOD set_packet_identifier.
+
+    mv_packet_identifier = iv_packet_identifier.
 
   ENDMETHOD.
 
@@ -125,7 +148,7 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
     ms_message-topic = io_stream->eat_utf8( ).
 
     IF mv_qos_level > 0.
-      DATA(lv_packet_identifier) = io_stream->eat_hex( 2 ).
+      mv_packet_identifier = io_stream->eat_hex( 2 ).
     ENDIF.
 
     ms_message-message = io_stream->eat_hex( io_stream->get_length( ) ).
@@ -142,9 +165,9 @@ CLASS ZCL_MQTT_PACKET_PUBLISH IMPLEMENTATION.
 
     DATA(lo_payload) = NEW zcl_mqtt_stream( ).
 
-    IF mv_qos_level <> 0.
-      BREAK-POINT.
-* todo, packet identifier for QoS = 1 or 2
+    IF mv_qos_level > 0.
+      ASSERT NOT mv_packet_identifier IS INITIAL.
+      lo_payload->add_hex( mv_packet_identifier ).
     ENDIF.
 
     lo_payload->add_utf8( ms_message-topic ).
