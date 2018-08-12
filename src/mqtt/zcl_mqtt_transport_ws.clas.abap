@@ -1,29 +1,29 @@
-class ZCL_MQTT_TRANSPORT_WS definition
-  public
-  create protected .
+CLASS zcl_mqtt_transport_ws DEFINITION
+  PUBLIC
+  CREATE PROTECTED .
 
-public section.
+  PUBLIC SECTION.
 
-  interfaces ZIF_MQTT_TRANSPORT .
-  interfaces IF_APC_WSP_EVENT_HANDLER .
-  interfaces IF_APC_WSP_EVENT_HANDLER_BASE .
+    INTERFACES zif_mqtt_transport .
+    INTERFACES if_apc_wsp_event_handler .
+    INTERFACES if_apc_wsp_event_handler_base .
 
-  class-methods CREATE_BY_URL
-    importing
-      !IV_URL type STRING
-    returning
-      value(RI_TRANSPORT) type ref to ZIF_MQTT_TRANSPORT
-    raising
-      CX_APC_ERROR .
-PROTECTED SECTION.
+    CLASS-METHODS create_by_url
+      IMPORTING
+        !iv_url             TYPE string
+      RETURNING
+        VALUE(ri_transport) TYPE REF TO zif_mqtt_transport
+      RAISING
+        cx_apc_error .
+  PROTECTED SECTION.
 
-  DATA mi_client TYPE REF TO if_apc_wsp_client .
+    DATA mi_client TYPE REF TO if_apc_wsp_client .
 
-  DATA: BEGIN OF ms_message,
-          received TYPE abap_bool,
-          message  TYPE xstring,
-        END OF ms_message.
-private section.
+    DATA: BEGIN OF ms_message,
+            received TYPE abap_bool,
+            message  TYPE xstring,
+          END OF ms_message.
+  PRIVATE SECTION.
 ENDCLASS.
 
 

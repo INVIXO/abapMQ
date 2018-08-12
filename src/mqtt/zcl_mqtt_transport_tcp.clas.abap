@@ -16,25 +16,25 @@ CLASS zcl_mqtt_transport_tcp DEFINITION
         VALUE(ri_transport) TYPE REF TO zif_mqtt_transport
       RAISING
         cx_apc_error .
-protected section.
+  PROTECTED SECTION.
 
-  types:
-    ty_byte TYPE x LENGTH 1 .
+    TYPES:
+      ty_byte TYPE x LENGTH 1 .
 
-  data:
-    BEGIN OF ms_message,
+    DATA:
+      BEGIN OF ms_message,
         received TYPE abap_bool,
         message  TYPE x LENGTH 1,
       END OF ms_message .
-  data MI_CLIENT type ref to IF_APC_WSP_CLIENT .
+    DATA mi_client TYPE REF TO if_apc_wsp_client .
 
-  methods RECEIVE_BYTE
-    importing
-      !IV_TIMEOUT type I
-    returning
-      value(RV_BYTE) type TY_BYTE
-    raising
-      ZCX_MQTT_TIMEOUT .
+    METHODS receive_byte
+      IMPORTING
+        !iv_timeout    TYPE i
+      RETURNING
+        VALUE(rv_byte) TYPE ty_byte
+      RAISING
+        zcx_mqtt_timeout .
   PRIVATE SECTION.
 ENDCLASS.
 
