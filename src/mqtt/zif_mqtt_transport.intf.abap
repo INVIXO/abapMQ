@@ -1,24 +1,23 @@
-interface ZIF_MQTT_TRANSPORT
-  public .
+INTERFACE zif_mqtt_transport PUBLIC.
 
 
-  methods CONNECT
-    raising
-      CX_APC_ERROR .
-  methods DISCONNECT
-    raising
-      CX_APC_ERROR .
-  methods SEND
-    importing
-      !II_PACKET type ref to ZIF_MQTT_PACKET
-    raising
-      ZCX_MQTT
-      CX_APC_ERROR .
-  methods LISTEN
-    importing
-      !IV_TIMEOUT type I
-    returning
-      value(RI_PACKET) type ref to ZIF_MQTT_PACKET
-    raising
-      ZCX_MQTT .
-endinterface.
+  METHODS connect
+    RAISING
+      cx_apc_error .
+  METHODS disconnect
+    RAISING
+      cx_apc_error .
+  METHODS send
+    IMPORTING
+      !ii_packet TYPE REF TO zif_mqtt_packet
+    RAISING
+      zcx_mqtt
+      cx_apc_error .
+  METHODS listen
+    IMPORTING
+      !iv_timeout      TYPE i
+    RETURNING
+      VALUE(ri_packet) TYPE REF TO zif_mqtt_packet
+    RAISING
+      zcx_mqtt .
+ENDINTERFACE.
