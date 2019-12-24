@@ -63,7 +63,7 @@ CLASS ZCL_MQTT_PACKET_CONNECT IMPLEMENTATION.
     mv_clean_session = iv_clean_session.
     mv_client_id     = iv_client_id.
     mv_keep_alive    = iv_keep_alive.
-    mv_password      = iv_password.
+    mv_password      = cl_binary_convert=>string_to_xstring_utf8( CONV #( iv_password ) ).
     mv_username      = iv_username.
     ms_will_message  = is_will_message.
     mv_will_qos      = iv_will_qos.
@@ -209,7 +209,7 @@ CLASS ZCL_MQTT_PACKET_CONNECT IMPLEMENTATION.
     ENDIF.
 
     IF NOT mv_password IS INITIAL.
-      lv_length = xstrlen( ms_will_message-message ).
+      lv_length = xstrlen( mv_password ). " <-- fix, was xstrlen( ms_will_message-message ).
       lo_payload->add_hex( lv_length ).
       lo_payload->add_hex( mv_password ).
     ENDIF.
