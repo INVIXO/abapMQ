@@ -12,6 +12,7 @@ CLASS zcl_mqtt_transport_tcp DEFINITION
       IMPORTING
         !iv_host            TYPE string
         !iv_port            TYPE string
+        iv_protocol         TYPE i DEFAULT cl_apc_tcp_client_manager=>co_protocol_type_tcp
       RETURNING
         VALUE(ri_transport) TYPE REF TO zif_mqtt_transport
       RAISING
@@ -52,6 +53,7 @@ CLASS ZCL_MQTT_TRANSPORT_TCP IMPLEMENTATION.
       fixed_length = 1 ).
 
     lo_tcp->mi_client = cl_apc_tcp_client_manager=>create(
+      i_protocol      = iv_protocol
       i_host          = iv_host
       i_port          = iv_port
       i_frame         = ls_frame
